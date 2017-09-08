@@ -1,4 +1,7 @@
-﻿namespace FacebookTimelineSnapshot
+﻿using System;
+using System.Configuration;
+
+namespace FacebookTimelineSnapshot
 {
     class Consts
     {
@@ -10,6 +13,12 @@
         public const string CacheControl = "Cache-Control";
         public const string CacheControlValue = "max-age=0";
 
-        public const string BaseUrl = "https://www.facebook.com";
+        public const string MainUrl = "https://www.facebook.com/";
+        public const string AuthenticationUrl = "https://m.facebook.com/login/async/?refsrc=https%3A%2F%2Fm.facebook.com%2F&lwv=100";
+
+        public static readonly string FacebookLogin = ConfigurationManager.AppSettings["FacebookLogin"];
+        public static readonly string FacebookPassword = ConfigurationManager.AppSettings["FacebookPassword"];
+
+        public static readonly string TimelinePath = $"{Environment.CurrentDirectory.Substring(0, Environment.CurrentDirectory.IndexOf("bin"))}timeline.html";
     }
 }
