@@ -10,7 +10,7 @@ namespace FacebookTimelineSnapshot
 {
     public class CommandLineOptions
     {
-        [Option('u', "usuário", Required = true, HelpText = "usuário do facebook")]
+        [Option('u', "usuario", Required = true, HelpText = "usuário do facebook")]
         public string User { get; set; }
 
         [Option('s', "senha", Required = true, HelpText = "senha do facebook")]

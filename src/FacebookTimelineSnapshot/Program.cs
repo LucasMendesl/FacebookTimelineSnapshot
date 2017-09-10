@@ -6,6 +6,7 @@ using CommandLine;
 using AngleSharp.Dom;
 using System.Collections.Generic;
 using FacebookTimelineSnapshot.Http;
+using System.CodeDom;
 
 namespace FacebookTimelineSnapshot
 {
