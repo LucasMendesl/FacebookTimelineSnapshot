@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 
 namespace FacebookTimelineSnapshot
 {
@@ -16,9 +17,6 @@ namespace FacebookTimelineSnapshot
         public const string MainUrl = "https://www.facebook.com/";
         public const string AuthenticationUrl = "https://m.facebook.com/login/async/?refsrc=https%3A%2F%2Fm.facebook.com%2F&lwv=100";
 
-        public static readonly string FacebookLogin = ConfigurationManager.AppSettings["FacebookLogin"];
-        public static readonly string FacebookPassword = ConfigurationManager.AppSettings["FacebookPassword"];
-
-        public static readonly string TimelinePath = $"{Environment.CurrentDirectory.Substring(0, Environment.CurrentDirectory.IndexOf("bin"))}timeline.html";
+        public static readonly string FileName = $"timeline_{DateTime.Now.ToString("yyyyMMddHHmmss.fff", CultureInfo.InvariantCulture)}.html";
     }
 }

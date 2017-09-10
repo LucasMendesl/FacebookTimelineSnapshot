@@ -2,9 +2,9 @@
 using System.IO;
 using System.Net;
 using System.Linq;
+using CommandLine;
 using AngleSharp.Dom;
 using System.Collections.Generic;
-
 using FacebookTimelineSnapshot.Http;
 
 namespace FacebookTimelineSnapshot
@@ -16,40 +16,53 @@ namespace FacebookTimelineSnapshot
 
         static void Main(string[] args)
         {
-            Dictionary<string, string> inputData = new Dictionary<string, string>
+            try
             {
-                { "email", Consts.FacebookLogin },
-                { "pass", Consts.FacebookPassword }
-            };
+                CommandLineOptions options = new CommandLineOptions();
 
-            Console.WriteLine("Entrando na pagina do facebook....");
+                if (Parser.Default.ParseArguments(args, options))
+                {
+                    Dictionary<string, string> inputData = new Dictionary<string, string>
+                    {
+                        { "email",  options.User },
+                        { "pass", options.Password }
+                    };
 
-            FacebookResponse loginPage = request.Get(Consts.MainUrl);
-            IElement form = loginPage.Html.GetElementById("login_form");
+                    Console.WriteLine("Entrando na pagina do facebook....");
 
-            Console.WriteLine("Realizando login....");
+                    FacebookResponse loginPage = request.Get(Consts.MainUrl);
+                    IElement form = loginPage.Html.GetElementById("login_form");
 
-            string body = BuildRequestBody(inputData, form);
-            FacebookResponse facebookAuthentication = request.Post(Consts.AuthenticationUrl, body, false);
+                    Console.WriteLine("Realizando login....");
 
-            if (!facebookAuthentication.IsAuthenticated)
+                    string body = BuildRequestBody(inputData, form);
+                    FacebookResponse facebookAuthentication = request.Post(Consts.AuthenticationUrl, body, false);
+
+                    if (!facebookAuthentication.IsAuthenticated)
+                        throw new UnauthorizedAccessException("Usuário e/ou senha inválidos!");
+
+                    Console.WriteLine("Realizando donwload da timeline...");
+                    FacebookResponse userTimeline = request.Get(Consts.MainUrl);
+
+                    using (StreamWriter writer = new StreamWriter($"{options.DirectoryPath}\\{Consts.FileName}"))
+                    {
+                        writer.Write(userTimeline.Html.Source.Text);
+                    }
+
+                    Console.WriteLine($"Donwload realizado no diretório {options.DirectoryPath}!");
+                }
+                else
+                {
+                    Console.WriteLine(options.GetHelp());
+                }
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("oops, usuário e/ou senha inválidos!");
-                System.Threading.Thread.Sleep(1000);
+                Console.WriteLine($"Ooops, ocorreu o seguinte erro: {e.Message}");
                 Environment.Exit(-1);
             }
 
-            Console.WriteLine("Realizando donwload da timeline...");
-
-            FacebookResponse userTimeline = request.Get(Consts.MainUrl);
-
-            using (StreamWriter writer = new StreamWriter(Consts.TimelinePath))
-            {
-                writer.Write(userTimeline.Html.Source.Text);
-            }
-            
-            Console.WriteLine($"Donwload realizado no diretório {Consts.TimelinePath}!");
-            Console.ReadKey();
+            Environment.Exit(0);
         }
 
         static string BuildRequestBody(Dictionary<string, string> inputData, IElement el)
